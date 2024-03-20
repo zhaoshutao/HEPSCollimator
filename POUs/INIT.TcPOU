@@ -1,0 +1,148 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.10">
+  <POU Name="INIT" Id="{95930908-939b-4ce5-b594-bd7cbf91376c}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM INIT
+VAR
+         initt:BOOL;
+	   
+         Clear_CurrentPosition_Axis11,Clear_CurrentPosition_Axis22,Clear_CurrentPosition_Axis33,Clear_CurrentPosition_Axis44,Clear_CurrentPosition_Axis55,Clear_CurrentPosition_Axis66,Clear_CurrentPosition_Axis77,Clear_CurrentPosition_Axis88,Clear_CurrentPosition_Axis99        :BOOL;
+	     Clear_done_Axis1,Clear_done_Axis2,Clear_done_Axis3,Clear_done_Axis4,Clear_done_Axis5,Clear_done_Axis6,Clear_done_Axis7,Clear_done_Axis8,Clear_done_Axis9                                  :BOOL;
+         SetPosition_delay     	  :TON;
+
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[(* 初始化程序，电机模式设定    *)
+      IF NOT initt THEN
+        MC_SetPosition_axis1   :=Axis1_CurrentPosition_retain;
+        MC_SetPosition_axis2   :=Axis2_CurrentPosition_retain;	   
+         setposition1              :=TRUE;
+         setposition2              :=TRUE;		
+         initt                                :=TRUE;
+     END_IF;
+
+IF NOT   Axis1_running  AND    Clear_CurrentPosition_Axis1 AND initt   THEN
+     mc_Home_axis1_Position              :=0.0;
+     Clear_CurrentPosition_Axis11       :=TRUE;
+     Clear_CurrentPosition_Axis1         :=FALSE;
+END_IF;
+
+IF NOT   Axis2_running   AND    Clear_CurrentPosition_Axis2 AND initt   THEN
+     mc_Home_axis2_Position              :=0.0;
+     Clear_CurrentPosition_Axis22       :=TRUE;
+     Clear_CurrentPosition_Axis2         :=FALSE;
+END_IF;
+
+
+
+IF NOT Axis1_running  AND  setposition11 AND dd AND NOT Clear_CurrentPosition_Axis1 THEN
+ mc_Home_axis1_Position              :=mc_Home_axis1_Position1;
+ Clear_CurrentPosition_Axis11       :=TRUE;;
+  setposition11                                      :=FALSE;
+END_IF;
+
+IF NOT Axis2_running  AND  setposition22 AND dd AND NOT Clear_CurrentPosition_Axis2 THEN
+ mc_Home_axis2_Position              :=mc_Home_axis2_Position1;
+ Clear_CurrentPosition_Axis22       :=TRUE;;
+  setposition22                                      :=FALSE;
+END_IF;
+
+mc_Home_axis1(
+	Execute:=Clear_CurrentPosition_Axis11 ,
+	Position:=mc_Home_axis1_Position,
+	HomingMode:=MC_Direct ,
+	BufferMode:= ,
+	Options:= ,
+	bCalibrationCam:= ,
+	Axis:= axis1,
+	Done=> Clear_done_Axis1,
+	Busy=> ,
+	Active=> ,
+	CommandAborted=> ,
+	Error=> ,
+	ErrorID=> );
+
+IF  Clear_done_Axis1 AND  Clear_CurrentPosition_Axis11  THEN
+Clear_CurrentPosition_Axis11  :=FALSE;
+Clear_done_Axis1                        :=FALSE;
+END_IF;
+
+
+mc_Home_axis2(
+	Execute:=Clear_CurrentPosition_Axis22 ,
+	Position:=mc_Home_axis2_Position ,
+	HomingMode:=MC_Direct ,
+	BufferMode:= ,
+	Options:= ,
+	bCalibrationCam:= ,
+	Axis:= axis2,
+	Done=> Clear_done_Axis2,
+	Busy=> ,
+	Active=> ,
+	CommandAborted=> ,
+	Error=> ,
+	ErrorID=> );
+
+IF  Clear_done_Axis2 AND  Clear_CurrentPosition_Axis22  THEN
+Clear_CurrentPosition_Axis22  :=FALSE;
+Clear_done_Axis2                       :=FALSE;
+END_IF;
+
+
+
+IF dd THEN
+
+MC_SetPosition1(
+	Execute:=setposition1 ,
+	Position:=MC_SetPosition_axis1 ,
+	Mode:=FALSE ,
+	Options:= ,
+	Axis:=axis1 ,
+	Done=>setposition1_done ,
+	Busy=> ,
+	Error=> ,
+	ErrorID=> );
+
+MC_SetPosition2(
+	Execute:=setposition2 ,
+	Position:=MC_SetPosition_axis2 ,
+	Mode:=FALSE ,
+	Options:= ,
+	Axis:=axis2 ,
+	Done=>setposition2_done ,
+	Busy=> ,
+	Error=> ,
+	ErrorID=> );
+
+
+IF  setposition1_done    THEN
+     setposition1                  :=FALSE ;
+     setposition1_done      :=FALSE ;
+END_IF;
+
+IF  setposition2_done  THEN
+     setposition2                 :=FALSE ;
+     setposition2_done     :=FALSE ;
+END_IF;
+
+END_IF;
+
+ SetPosition_delay(in := initt, pt := T#2s);
+IF  SetPosition_delay.Q THEN
+     dd   :=TRUE;
+END_IF;]]></ST>
+    </Implementation>
+    <LineIds Name="INIT">
+      <LineId Id="192" Count="3" />
+      <LineId Id="197" Count="1" />
+      <LineId Id="200" Count="14" />
+      <LineId Id="219" Count="12" />
+      <LineId Id="241" Count="41" />
+      <LineId Id="301" Count="25" />
+      <LineId Id="337" Count="9" />
+      <LineId Id="357" Count="0" />
+      <LineId Id="352" Count="4" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

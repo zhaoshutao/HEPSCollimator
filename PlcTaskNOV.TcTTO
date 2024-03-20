@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.10">
+  <Task Name="PlcTaskNOV" Id="{5e24c772-0492-41f0-a668-3c994177ceb7}">
+    <!--CycleTime in micro seconds.-->
+    <CycleTime>50000</CycleTime>
+    <Priority>1</Priority>
+    <PouCall>
+      <Name>NOVRAM</Name>
+    </PouCall>
+    <TaskFBGuid>{7d14eb69-6115-4533-a3df-c9b81d40683a}</TaskFBGuid>
+    <Fb_init>{2790012f-e17d-48c9-9a86-210adaf992b7}</Fb_init>
+    <Fb_exit>{25e590b2-5cda-4a2c-926d-330c37e0f753}</Fb_exit>
+    <CycleUpdate>{c4fd85b2-f5ab-4de6-ab53-7c44c3a9e053}</CycleUpdate>
+    <PostCycleUpdate>{85d4e72c-9ef2-4d60-98d3-9d2722e946c0}</PostCycleUpdate>
+  </Task>
+</TcPlcObject>

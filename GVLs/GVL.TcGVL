@@ -1,0 +1,157 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <GVL Name="GVL" Id="{a75fe4eb-9322-4c82-86a9-bd49701e9f2e}">
+    <Declaration><![CDATA[
+VAR_GLOBAL
+	     axis1,axis2: AXIS_REF;
+         Power_axis1,Power_axis2: MC_Power;
+         jog_axis1,jog_axis2: MC_Jog;
+         stop_axis1,stop_axis2: MC_Stop;
+         move_A1,move_A2: MC_MoveAbsolute;
+         mc_Home_axis1,mc_Home_axis2:MC_Home;
+         MC_Reset1, MC_Reset2 : MC_Reset;
+	     power_do1,power_do2: BOOL;
+         axis1_enabled, axis2_enabled : BOOL;(*电机使能标志*)
+         mc_setposition1,mc_setposition2:MC_SetPosition;
+         setposition1,setposition2 :BOOL;
+         setposition11,setposition22 :BOOL;
+         setposition1_done,setposition2_done :BOOL;
+         MC_SetPosition_axis1,MC_SetPosition_axis2:REAL;         
+         mc_Home_axis1_Position,mc_Home_axis2_Position  :REAL;
+         mc_Home_axis1_Position1,mc_Home_axis2_Position1   :REAL;
+		 MC_Reset1_Execute,MC_Reset2_Execute :BOOL;
+         MC_Reset1_Done,MC_Reset2_Done:BOOL; 
+		 dd  :BOOL;
+
+(*输入*)
+        E_STOP  AT%I*:BOOL;(*急停NC*)  
+        foreward_limit_axis1  AT%I*:BOOL;(*1#电机正极限NC*)
+	    reverse_limit_axis1   AT%I*:BOOL;(*1#电机负极限NC*)
+        foreward_limit_axis2  AT%I*:BOOL;(*2#电机正极限NC*)
+	    reverse_limit_axis2   AT%I*:BOOL;(*2#电机负极限NC*)  
+        PT1_IN   AT%I*:INT;(*pt100测量值*)
+		PT2_IN   AT%I*:INT;(*pt100测量值*)
+		PT_Axis1              AT%I*:INT;(*1#电机温度*)
+		PT_Axis2              AT%I*:INT;(*2#电机温度*)
+		LVDT1_IN              AT%I*:INT;(*1#LVDT*)
+		LVDT2_IN              AT%I*:INT;(*2#LVDT*)
+		
+	
+         Axis1_PositiveJog     :BOOL;(*1#电机正向点动*)
+         Axis1_NegativeJog     :BOOL;(*1#电机反向点动*)
+         Axis1_Positionstart   :BOOL;(*1#电机定位启动*)
+		 Axis1_STOP            :BOOL;(*1#电机停止*)
+
+         Axis2_PositiveJog     :BOOL;(*2#电机正向点动*)
+         Axis2_NegativeJog     :BOOL;(*2#电机反向点动*)
+         Axis2_Positionstart   :BOOL;(*2#电机定位启动*)
+		 Axis2_STOP            :BOOL;(*2#电机停止*)
+		 
+		 Local_Remote           AT%MX0.0:BOOL:=TRUE;(*1:触摸屏模式;0:远程*)	
+         E_STOP_rem            :BOOL;(*远程急停*)	            
+(*输出*)
+         
+        Axis1_PositiveJog_running      :BOOL;(*1#电机正向点动运行指示*)
+        Axis1_NegativeJog_running      :BOOL;(*1#电机反向点动运行指示*)
+        Axis1_Position_running         :BOOL;(*1#电机定位运行指示*)
+
+        Axis2_PositiveJog_running      :BOOL;(*2#电机正向点动运行指示*)
+        Axis2_NegativeJog_running      :BOOL;(*2#电机反向点动运行指示*)
+        Axis2_Position_running         :BOOL;(*2#电机定位运行指示*)
+			
+       Axis1_Position_done             :BOOL;(*1#电机定位完成*)
+       Axis2_Position_done             :BOOL;(*2#电机定位完成*)
+	   
+       E_STOP_led                      :BOOL;(*急停指示*)
+       Local_led                       :BOOL;(*本地模式指示*)
+       Remote_led                      :BOOL;(*远程模式指示*)
+       Axis1_error                      :BOOL;(*电机1故障指示*)
+       Axis2_error                      :BOOL;(*电机2故障指示*)	 
+       Axis1_running                     :BOOL;(*1#电机运行指示*)
+       Axis2_running                     :BOOL;(*2#电机运行指示*)
+    	    
+     Clear_CurrentPosition_Axis1        :BOOL;(*1#电机当前位置清零*)
+     Clear_CurrentPosition_Axis2        :BOOL;(*2#电机当前位置清零*)
+		
+     foreward_limit_axis1_LED       :BOOL;(*1#电机软正限位指示*)
+     reverse_limit_axis1_LED        :BOOL;(*1#电机软负限位指示*)
+     foreward_limit_axis2_LED       :BOOL;(*2#电机软正限位指示*)
+     reverse_limit_axis2_LED        :BOOL;(*2#电机软负限位指示*)
+	 foreward_limit_axis3_LED       :BOOL;(*3#电机软正限位指示*)
+     reverse_limit_axis3_LED        :BOOL;(*3#电机软负限位指示*)
+	 
+	 
+	 
+	 (**MODBUS变量_输入**)	   
+//	   MOD_B_modbus_remote                              AT%MX0.0:BOOL;(*远程/触摸屏模式切换*)	  
+	   MOD_B_Axis1_PositiveJog                          AT%MX0.1:BOOL;(******1#电机JOG+******)
+       MOD_B_Axis1_NegativeJog                          AT%MX0.2:BOOL;(******1#电机JOG-****)
+	   MOD_B_Axis1_Positionstart                        AT%MX0.3:BOOL;(*****1#电机定位*******)
+	   MOD_B_Axis1_STOP                                 AT%MX0.4:BOOL;(*****1#电机停止*******)
+	   MOD_B_Axis2_PositiveJog                          AT%MX0.5:BOOL;(******2#电机JOG+******)
+       MOD_B_Axis2_NegativeJog                          AT%MX0.6:BOOL;(******2#电机JOG-****)
+	   MOD_B_Axis2_Positionstart                        AT%MX0.7:BOOL;(*****2#电机定位*******)
+	   MOD_B_Axis2_STOP                                 AT%MX1.0:BOOL;(*****2#电机停止*******)	   
+	   MOD_B_MC_Reset1_Execute                          AT%MX1.1:BOOL;(******1#电机故障复位******)
+	   MOD_B_MC_Reset2_Execute                          AT%MX1.2:BOOL;(******2#电机故障复位******)
+       MOB_R_Axis1_SetPosition                          AT%MB500:REAL;(****1#电机目标位置设置****)
+	   MOB_R_Axis2_SetPosition                          AT%MB504:REAL;(****2#电机目标位置设置****)
+       MOB_R_Axis1_Setvelocity                          AT%MB524:REAL;(****1#电机速度设置********)
+	   MOB_R_Axis2_Setvelocity                          AT%MB528:REAL;(****2#电机速度设置********)
+(**MODBUS变量_输出**)	  
+      MOD_B_E_STOP_led                                  AT%MX6.0:BOOL;(******急停指示*****)      
+      MOD_B_Local_led                                   AT%MX6.1:BOOL;(*触摸屏模式指示*)
+	  MOD_B_Remote_led                                  AT%MX6.2:BOOL;(******远程模式指示******)	  
+      MOD_B_Axis1_error                                 AT%MX6.3:BOOL;(******1#电机故障*************)
+      MOD_B_Axis2_error                                 AT%MX6.4:BOOL;(******2#电机故障*************)     
+	  MOD_B_Axis1_running                               AT%MX7.0:BOOL;(******1#电机运行*************) 
+	  MOD_B_Axis2_running                               AT%MX7.1:BOOL;(******2#电机运行*************)	
+	  MOD_B_foreward_limit_axis1_LED                    AT%MX7.2:BOOL;(******1#电机正限位***********) 
+	  MOD_B_reverse_limit_axis1_LED                     AT%MX7.3:BOOL;(******1#电机负限位***********) 
+	  MOD_B_foreward_limit_axis2_LED                    AT%MX7.4:BOOL;(******2#电机正限位***********) 
+	  MOD_B_reverse_limit_axis2_LED                     AT%MX7.5:BOOL;(******2#电机负限位***********)     
+	  MOD_B_Axis1_Position_done                         AT%MX7.6:BOOL;(*****1#电机到位*)
+	  MOD_B_Axis2_Position_done                         AT%MX7.7:BOOL;(*****2#电机到位*)
+	   
+	  MOB_R_Axis1_Currentvelocity                       AT%MB600:REAL;(****1#电机实时速度***********)
+	  MOB_R_Axis2_Currentvelocity                       AT%MB604:REAL;(****2#电机实时速度***********)
+      MOB_R_Axis1_CurrentPosition                       AT%MB608:REAL;(****1#电机实时位置***********)
+	  MOB_R_Axis2_CurrentPosition                       AT%MB612:REAL;(****2#电机实时位置***********)
+      MOB_R_temp_Axis1                                  AT%MB616:REAL;(****1#电机电机温度***********)
+	  MOB_R_temp_Axis2                                  AT%MB620:REAL;(****2#电机机温度*************)
+      MOB_R_TempController1_PV                          AT%MB624:REAL;(***1#*温度传感器温度值**)
+	  MOB_R_TempController2_PV                          AT%MB628:REAL;(***2#*温度传感器温度值**)
+	  MOB_R_LVDT1_PV                                    AT%MB632:REAL;(***1#LVDT***)
+	  MOB_R_LVDT2_PV                                    AT%MB636:REAL;(***1#LVDT***) 
+	   
+
+        {attribute 'TcContextName':='PlcTaskNOV'}		
+       Axis1_Setvelocity                            AT%QD2000:REAL;(*1#电机设定速度*)
+	   {attribute 'TcContextName':='PlcTaskNOV'}
+       Axis2_Setvelocity                            AT%QD2004:REAL;(*2#电机设定速度*)
+	    {attribute 'TcContextName':='PlcTaskNOV'}   
+       Axis1_CurrentPosition_retain              AT%QD2008:REAL;
+	   {attribute 'TcContextName':='PlcTaskNOV'}
+       Axis2_CurrentPosition_retain              AT%QD2012:REAL;
+	   {attribute 'TcContextName':='PlcTaskNOV'}
+       Axis1_TargetPosition_retain               AT%QD2016:REAL;
+	   {attribute 'TcContextName':='PlcTaskNOV'}
+       Axis2_TargetPosition_retain               AT%QD2020:REAL;
+	   {attribute 'TcContextName':='PlcTaskNOV'}
+	   temperature_sv                            AT%QD2024:REAL;  (*电机温度保护设定值*)
+	         
+    
+       Axis1_Currentvelocity                            AT%MD200:REAL;
+       Axis2_Currentvelocity                            AT%MD204:REAL;	  	        
+       TempController1_PV                               AT%MD208:REAL;(*****PT1温度值*****)
+	   TempController2_PV                               AT%MD212:REAL;(*****PT1温度值*****) 
+	   temp_Axis1                                       AT%MD216:REAL;(*1#电机温度*)
+       temp_Axis2                                       AT%MD220:REAL;(*2#电机温度*)
+	   
+	   LVDT1_PV                                         AT%MD224:REAL;(*1#LVDT*)
+	   LVDT2_PV                                         AT%MD228:REAL;(*2#LVDT*)
+	   
+END_VAR
+]]></Declaration>
+  </GVL>
+</TcPlcObject>

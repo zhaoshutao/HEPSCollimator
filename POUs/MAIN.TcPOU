@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="MAIN" Id="{ea8307cc-ac85-49ab-b5fb-1ec00128eeda}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR
+	 E_STOP_ftring                                   :F_TRIG;
+     E_STOP_rtring                                   :R_TRIG;
+	 E_STOP_rem_rtring                         :R_TRIG;
+     E_STOP_rem_ftring                         :F_TRIG;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[modbus();
+(*******控制模式选择及显示，在电机运行过程中禁止切换*********)   
+ IF  Local_Remote   THEN
+      Local_led                       := TRUE;
+      Remote_led                      := FALSE;  
+   ELSE	
+      Local_led                       := FALSE;
+      Remote_led                      := TRUE;
+ END_IF;
+
+
+(***********急停************)
+    E_STOP_ftring(CLK:=E_STOP , Q=> );
+    E_STOP_rtring(CLK:=E_STOP , Q=> );
+    E_STOP_rem_ftring(CLK:=E_STOP_rem , Q=> );
+    E_STOP_rem_rtring(CLK:=E_STOP_rem , Q=> );
+IF   E_STOP_rem   OR  NOT  E_STOP THEN     
+     E_STOP_led      := TRUE;	
+     power_do1                          := FALSE;     
+     power_do2                          := FALSE;
+     	 
+END_IF;
+
+IF  (E_STOP_rtring.Q AND  NOT  E_STOP_rem) OR ( E_STOP AND E_STOP_rem_ftring.Q ) THEN
+E_STOP_led     := FALSE;
+END_IF;
+
+
+
+
+(********实际温度值********)
+TempController1_PV  :=35.0*( (INT_TO_REAL(PT1_IN))*10.0/32767)-50.0;
+TempController2_PV  :=35.0*( (INT_TO_REAL(PT2_IN))*10.0/32767)-50.0;]]></ST>
+    </Implementation>
+    <LineIds Name="MAIN">
+      <LineId Id="67" Count="0" />
+      <LineId Id="18" Count="6" />
+      <LineId Id="6" Count="1" />
+      <LineId Id="9" Count="0" />
+      <LineId Id="25" Count="2" />
+      <LineId Id="58" Count="1" />
+      <LineId Id="30" Count="2" />
+      <LineId Id="35" Count="0" />
+      <LineId Id="49" Count="0" />
+      <LineId Id="51" Count="3" />
+      <LineId Id="10" Count="3" />
+      <LineId Id="15" Count="1" />
+      <LineId Id="2" Count="0" />
+      <LineId Id="17" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
