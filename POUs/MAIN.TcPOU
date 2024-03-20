@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.6">
   <POU Name="MAIN" Id="{ea8307cc-ac85-49ab-b5fb-1ec00128eeda}" SpecialFunc="None">
     <Declaration><![CDATA[PROGRAM MAIN
 VAR
@@ -33,16 +33,14 @@ IF   E_STOP_rem   OR  NOT  E_STOP THEN
      	 
 END_IF;
 
+//本地上升沿触发且远程FALSE；或者远程下降沿触发且本地急停TRUE
 IF  (E_STOP_rtring.Q AND  NOT  E_STOP_rem) OR ( E_STOP AND E_STOP_rem_ftring.Q ) THEN
 E_STOP_led     := FALSE;
 END_IF;
 
-
-
-
 (********实际温度值********)
-TempController1_PV  :=35.0*( (INT_TO_REAL(PT1_IN))*10.0/32767)-50.0;
-TempController2_PV  :=35.0*( (INT_TO_REAL(PT2_IN))*10.0/32767)-50.0;]]></ST>
+TempController1_PV  :=35.0*( (INT_TO_REAL(PT1_IN))*10.0/32767)-50.0;//接入EL3214，三线制pt100
+TempController2_PV  :=35.0*( (INT_TO_REAL(PT2_IN))*10.0/32767)-50.0;//接入EL3214，三线制pt100]]></ST>
     </Implementation>
     <LineIds Name="MAIN">
       <LineId Id="67" Count="0" />
@@ -54,8 +52,10 @@ TempController2_PV  :=35.0*( (INT_TO_REAL(PT2_IN))*10.0/32767)-50.0;]]></ST>
       <LineId Id="30" Count="2" />
       <LineId Id="35" Count="0" />
       <LineId Id="49" Count="0" />
-      <LineId Id="51" Count="3" />
-      <LineId Id="10" Count="3" />
+      <LineId Id="51" Count="0" />
+      <LineId Id="75" Count="0" />
+      <LineId Id="52" Count="2" />
+      <LineId Id="10" Count="0" />
       <LineId Id="15" Count="1" />
       <LineId Id="2" Count="0" />
       <LineId Id="17" Count="0" />
