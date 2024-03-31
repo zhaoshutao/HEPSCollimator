@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.6">
   <POU Name="Axis2_FC" Id="{34d552b2-c18f-4183-8d64-2467f6a78e6b}" SpecialFunc="None">
     <Declaration><![CDATA[PROGRAM Axis2_FC
 VAR
@@ -46,7 +46,10 @@ VAR
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[(*************运行指示************)
+      <ST><![CDATA[IF Axis2_InputPositionOutOfRange THEN
+	RETURN;
+END_IF
+(*************运行指示************)
 
 IF  Axis2_PositiveJog_running OR Axis2_NegativeJog_running   OR  Axis2_Position_running    THEN
  Axis2_running    := TRUE;
@@ -56,16 +59,18 @@ IF  NOT Axis2_PositiveJog_running AND NOT  Axis2_NegativeJog_running   AND NOT  
 END_IF;
 
 (***********限位******)
-IF   foreward_limit_Axis2 THEN
-foreward_limit_Axis2_LED   := TRUE;
+(*
+IF  NOT foreward_limit_Axis2 THEN//触发
+foreward_limit_Axis2_LED   := TRUE;//RED
 ELSE
-foreward_limit_Axis2_LED   := FALSE;
+foreward_limit_Axis2_LED   := FALSE;//GREEN
 END_IF;
 IF  reverse_limit_Axis2 THEN
-reverse_limit_Axis2_LED   := TRUE;
+reverse_limit_Axis2_LED   := TRUE;//RED
 ELSE
-reverse_limit_Axis2_LED   := FALSE;
+reverse_limit_Axis2_LED   := FALSE;//GREEM
 END_IF;
+*)
 (*
 IF Axis2_CurrentPosition>= Axis2_foreward_limit THEN
 foreward_limit_Axis2_LED_soft   := TRUE;
@@ -90,25 +95,25 @@ END_IF;
 
 (**********屏幕按钮**互锁变量***********)
 
-IF  E_STOP  AND Local_led AND NOT  Axis2_error  AND NOT  Axis2_NegativeJog_running  AND NOT   Axis2_NegativeJog  AND  NOT  foreward_limit_Axis2_LED  AND NOT Axis2_Positionstart AND NOT  Axis2_Position_running  THEN
+IF  E_STOP  AND Local_led AND NOT  Axis2_error  AND NOT  Axis2_NegativeJog_running  AND NOT   (Axis2_NegativeJog OR Axis_All_NegativeJog)  AND  foreward_limit_Axis2  AND NOT Axis2_Positionstart AND NOT  Axis2_Position_running  THEN
 Axis2_J1     := TRUE;
 ELSE
 Axis2_J1     := FALSE;
 END_IF;
 
-IF  E_STOP   AND Local_led AND NOT  Axis2_error  AND NOT  Axis2_PositiveJog_running  AND NOT   Axis2_PositiveJog  AND  NOT reverse_limit_Axis2_LED   AND NOT Axis2_Positionstart AND NOT  Axis2_Position_running   THEN
+IF  E_STOP   AND Local_led AND NOT  Axis2_error  AND NOT  Axis2_PositiveJog_running  AND NOT (Axis2_PositiveJog OR Axis_All_PositiveJog) AND backward_limit_Axis2   AND NOT Axis2_Positionstart AND NOT  Axis2_Position_running   THEN
 Axis2_J2     := TRUE;
 ELSE
 Axis2_J2     := FALSE;
 END_IF;
 
-IF  E_STOP   AND Local_led AND NOT  Axis2_error  AND NOT  Axis2_PositiveJog_running  AND NOT   Axis2_PositiveJog AND NOT  Axis2_NegativeJog_running  AND NOT   Axis2_NegativeJog   AND NOT Axis2_running THEN
+IF  E_STOP   AND Local_led AND NOT  Axis2_error  AND NOT  Axis2_PositiveJog_running  AND NOT (Axis2_PositiveJog OR Axis_All_PositiveJog) AND NOT  Axis2_NegativeJog_running  AND NOT   (Axis2_NegativeJog OR Axis_All_NegativeJog)   AND NOT Axis2_running THEN
 Axis2_P     := TRUE;
 ELSE
 Axis2_P     := FALSE;
 END_IF;
 
-IF E_STOP   AND Local_led AND NOT  Axis2_error  AND NOT  Axis2_PositiveJog_running  AND NOT   Axis2_PositiveJog AND NOT  Axis2_NegativeJog_running  AND NOT   Axis2_NegativeJog  AND NOT Axis2_Positionstart  AND  NOT reverse_limit_Axis2_LED  AND NOT Axis2_running  THEN
+IF E_STOP   AND Local_led AND NOT  Axis2_error  AND NOT  Axis2_PositiveJog_running  AND NOT (Axis2_PositiveJog OR Axis_All_PositiveJog) AND NOT  Axis2_NegativeJog_running  AND NOT   (Axis2_NegativeJog OR Axis_All_NegativeJog)  AND NOT Axis2_Positionstart  AND  backward_limit_Axis2  AND NOT Axis2_running  THEN
 Axis2_R     := TRUE;
 ELSE
 Axis2_R     := FALSE;
@@ -132,12 +137,14 @@ temp_Axis2  :=INT_TO_REAL(PT_Axis2)/10.0;
 (***********电机1错误时***********)
 Axis2_error_ftring(CLK:=Axis2_error , Q=> );
 Axis2_error_rtring(CLK:=Axis2_error , Q=> );
-IF ( E_STOP_led OR Axis2_error)  OR ( ((Axis2_PositiveJog AND  NOT Axis2_NegativeJog)   OR  (Axis2_Positionstart_run AND NOT Axis2_PositiveJog  AND  NOT Axis2_NegativeJog  AND Axis2_Positiveposition_run  ) )AND    (foreward_limit_Axis2_LED  )) OR   (((Axis2_NegativeJog AND NOT Axis2_PositiveJog )   OR(Axis2_Positionstart_run AND NOT Axis2_PositiveJog  AND  NOT Axis2_NegativeJog AND  Axis2_Negativeposition_run)) AND ( reverse_limit_Axis2_LED ) )   THEN
+IF ( E_STOP_led OR Axis2_error)  OR ( (((Axis2_PositiveJog OR Axis_All_PositiveJog) AND  NOT (Axis2_NegativeJog OR Axis_All_NegativeJog))   OR  (Axis2_Positionstart_run AND NOT (Axis2_PositiveJog OR Axis_All_PositiveJog)  AND  NOT (Axis2_NegativeJog OR Axis_All_NegativeJog)  AND Axis2_Positiveposition_run  ) )AND    (NOT foreward_limit_Axis2  )) OR   ((((Axis2_NegativeJog OR Axis_All_NegativeJog) AND NOT (Axis2_PositiveJog OR Axis_All_PositiveJog) )   OR(Axis2_Positionstart_run AND NOT (Axis2_PositiveJog OR Axis_All_PositiveJog)  AND  NOT (Axis2_NegativeJog OR Axis_All_NegativeJog) AND  Axis2_Negativeposition_run)) AND (NOT backward_limit_Axis2 ) )   THEN
      Axis2_Positionstart_STOP           := TRUE;
      Axis2_PositiveJog                  := FALSE;
+	 Axis_All_PositiveJog               := FALSE;
      Axis2_PositiveJog_run1             := FALSE;
      Axis2_PositiveJog_run              := FALSE;
      Axis2_NegativeJog                  := FALSE;
+	 Axis_All_NegativeJog               := FALSE;
      Axis2_NegativeJog_run1             := FALSE;
      Axis2_NegativeJog_run              := FALSE;
      Axis2_PositiveJog_running          := FALSE;
@@ -151,11 +158,12 @@ IF ( E_STOP_led OR Axis2_error)  OR ( ((Axis2_PositiveJog AND  NOT Axis2_Negativ
      Axis2_Positiveposition_run         := FALSE;
      Axis2_Negativeposition_run         := FALSE;
 	 Axis2_STOP                         := FALSE;
+	 Axis_All_STOP                      := FALSE;
 END_IF;
 
 (************1#电机JOG+***********)
-Axis2_PositiveJog_rtring (CLK:=Axis2_PositiveJog , Q=> );
-IF  E_STOP  AND NOT Axis2_error AND NOT foreward_limit_Axis2_LED  AND NOT  Axis2_running   AND NOT Axis2_NegativeJog AND NOT Axis2_Positionstart   AND   Axis2_PositiveJog_rtring.Q  THEN
+Axis2_PositiveJog_rtring (CLK:=(Axis2_PositiveJog OR Axis_All_PositiveJog) , Q=> );
+IF  E_STOP  AND NOT Axis2_error AND foreward_limit_Axis2  AND NOT  Axis2_running   AND NOT (Axis2_NegativeJog OR Axis_All_NegativeJog) AND NOT Axis2_Positionstart   AND   Axis2_PositiveJog_rtring.Q  THEN
  IF NOT Power_Axis2.Status  THEN
             power_do2:= TRUE;		   
             END_IF;			    		     	   					
@@ -168,7 +176,7 @@ IF  E_STOP  AND NOT Axis2_error AND NOT foreward_limit_Axis2_LED  AND NOT  Axis2
            Axis2_home_run1                      := FALSE;        
 END_IF;
 
-IF  Axis2_PositiveJog  AND  E_STOP  AND NOT Axis2_error  AND Axis2_PositiveJog_run1  AND Power_Axis2.Status THEN
+IF  (Axis2_PositiveJog OR Axis_All_PositiveJog)  AND  E_STOP  AND NOT Axis2_error  AND Axis2_PositiveJog_run1  AND Power_Axis2.Status THEN
          Axis2_PositiveJog_run                := TRUE;
            IF Axis2.NcToPlc.ActVelo <>0 THEN
          Axis2_PositiveJog_running          := TRUE;
@@ -179,8 +187,8 @@ END_IF;
 
 
 (***********1#*电机JOG-***********)
-Axis2_NegativeJog_rtring (CLK:=Axis2_NegativeJog , Q=> );
-IF  E_STOP  AND NOT Axis2_error  AND NOT reverse_limit_Axis2_LED   AND NOT  Axis2_running   AND NOT Axis2_PositiveJog  AND NOT Axis2_Positionstart  AND   Axis2_NegativeJog_rtring.Q  THEN
+Axis2_NegativeJog_rtring (CLK:=(Axis2_NegativeJog OR Axis_All_NegativeJog) , Q=> );
+IF  E_STOP  AND NOT Axis2_error  AND backward_limit_Axis2   AND NOT  Axis2_running   AND NOT (Axis2_PositiveJog OR Axis_All_PositiveJog)  AND NOT Axis2_Positionstart  AND   Axis2_NegativeJog_rtring.Q  THEN
  IF NOT Power_Axis2.Status THEN
             power_do2:= TRUE;			
             END_IF;
@@ -193,7 +201,7 @@ IF  E_STOP  AND NOT Axis2_error  AND NOT reverse_limit_Axis2_LED   AND NOT  Axis
            Axis2_home_run1                      := FALSE;        
 END_IF;
 
-IF  Axis2_NegativeJog  AND  E_STOP  AND NOT Axis2_error  AND Axis2_NegativeJog_run1  AND Power_Axis2.Status   THEN
+IF  (Axis2_NegativeJog OR Axis_All_NegativeJog)  AND  E_STOP  AND NOT Axis2_error  AND Axis2_NegativeJog_run1  AND Power_Axis2.Status   THEN
 
          Axis2_NegativeJog_run                := TRUE;
       IF Axis2.NcToPlc.ActVelo <>0 THEN
@@ -205,8 +213,8 @@ END_IF;
 
 
 (***********1#*电机JOG停止************)
-Axis2_PositiveJog_ftring(CLK:=Axis2_PositiveJog , Q=> );
-Axis2_NegativeJog_ftring(CLK:=Axis2_NegativeJog , Q=> );
+Axis2_PositiveJog_ftring(CLK:=(Axis2_PositiveJog  OR Axis_All_PositiveJog) , Q=> );
+Axis2_NegativeJog_ftring(CLK:=(Axis2_NegativeJog OR Axis_All_NegativeJog) , Q=> );
 IF ( (Axis2_PositiveJog_ftring.Q  AND Axis2_PositiveJog_running  ) OR (Axis2_NegativeJog_ftring.Q AND Axis2_NegativeJog_running ))   AND NOT Axis2_Positionstart   THEN
            Axis2_PositiveJog_run1                := FALSE;
            Axis2_PositiveJog_run                 := FALSE;
@@ -218,7 +226,7 @@ END_IF;
 
 (************1#*电机定位运行*************)
 Axis2_Positionstart_rtring (CLK:=Axis2_Positionstart , Q=> );
-IF  E_STOP  AND NOT Axis2_error AND NOT  Axis2_running   AND NOT Axis2_PositiveJog   AND NOT Axis2_NegativeJog   AND  ( Axis2_Positionstart_rtring.Q OR Axis2_Positionstart1_rtring.Q ) THEN
+IF  E_STOP  AND NOT Axis2_error AND NOT  Axis2_running   AND NOT (Axis2_PositiveJog OR Axis_All_PositiveJog)  AND NOT (Axis2_NegativeJog OR Axis_All_NegativeJog)   AND  ( Axis2_Positionstart_rtring.Q OR Axis2_Positionstart1_rtring.Q ) THEN
           Axis2_Positionstart_STOP            := FALSE;
  IF NOT Power_Axis2.Status THEN
             power_do2:= TRUE;			
@@ -253,13 +261,13 @@ Axis2_Position_running           := FALSE;
 END_IF;
 END_IF;
 
-IF   E_STOP  AND NOT Axis2_error  AND Axis2_Positionstart_run1  AND Power_Axis2.Status  AND ((Axis2_Positiveposition_run AND NOT foreward_limit_Axis2_LED )OR (Axis2_Negativeposition_run AND NOT  reverse_limit_Axis2_LED ) )  THEN
+IF   E_STOP  AND NOT Axis2_error  AND Axis2_Positionstart_run1  AND Power_Axis2.Status  AND ((Axis2_Positiveposition_run AND foreward_limit_Axis2 )OR (Axis2_Negativeposition_run AND backward_limit_Axis2 ) )  THEN
          Axis2_Positionstart_run                 := TRUE;		      			 
          Axis2_Positionstart_run1                := FALSE;
 END_IF;
 
 (***********1#*电机定位完成***********)
-IF   E_STOP  AND NOT Axis2_error AND NOT Axis2_PositiveJog   AND NOT Axis2_NegativeJog AND Axis2_Positionstart_run AND Axis2_running  AND Power_Axis2.Status  AND  Axis2_Position_done1  THEN
+IF   E_STOP  AND NOT Axis2_error AND NOT (Axis2_PositiveJog OR Axis_All_PositiveJog)   AND NOT (Axis2_NegativeJog OR Axis_All_NegativeJog) AND Axis2_Positionstart_run AND Axis2_running  AND Power_Axis2.Status  AND  Axis2_Position_done1  THEN
          Axis2_Positionstart_run                 := FALSE;        		     
          Axis2_Position_done1                    := FALSE;
          Axis2_Position_running                  := FALSE;	
@@ -269,7 +277,7 @@ IF   E_STOP  AND NOT Axis2_error AND NOT Axis2_PositiveJog   AND NOT Axis2_Negat
 END_IF;
 
 (***********1#电机手动停止***********)
-Axis2_STOP_rtring(CLK:=Axis2_STOP , Q=> );
+Axis2_STOP_rtring(CLK:=(Axis2_STOP OR Axis_All_STOP) , Q=> );
 IF   E_STOP  AND NOT Axis2_error   AND Axis2_running AND Power_Axis2.Status  AND Axis2_STOP_rtring.Q THEN
          Axis2_Positionstart_STOP           := TRUE;
          Axis2_Positionstart_run            := FALSE;
@@ -283,8 +291,8 @@ END_IF;
 //使能
 Power_Axis2(
 	Enable:=power_do2 ,
-	Enable_Positive:=NOT foreward_limit_Axis2_LED,
-	Enable_Negative:=NOT reverse_limit_Axis2_LED,
+	Enable_Positive:=foreward_limit_Axis2,
+	Enable_Negative:=backward_limit_Axis2,
 	Override:=100 ,
 	BufferMode:= ,
 	Axis:=Axis2,
@@ -297,8 +305,8 @@ Power_Axis2(
 	jog_Axis2(
 	JogForward:=Axis2_PositiveJog_run ,
 	JogBackwards:= Axis2_NegativeJog_run,
-	Mode:=MC_JOGMODE_CONTINOUS ,
-	POSITION:= ,
+	Mode:=MC_JOGMODE_INCHING ,
+	POSITION:= Axis2_JogPosition_retain,
 	Velocity:=Axis2_Setvelocity,
 	Acceleration:= ,
 	Deceleration:= ,
@@ -369,7 +377,21 @@ END_IF;
 ]]></ST>
     </Implementation>
     <LineIds Name="Axis2_FC">
-      <LineId Id="93" Count="308" />
+      <LineId Id="500" Count="1" />
+      <LineId Id="499" Count="0" />
+      <LineId Id="93" Count="9" />
+      <LineId Id="503" Count="0" />
+      <LineId Id="103" Count="9" />
+      <LineId Id="504" Count="0" />
+      <LineId Id="113" Count="68" />
+      <LineId Id="505" Count="0" />
+      <LineId Id="182" Count="2" />
+      <LineId Id="506" Count="0" />
+      <LineId Id="185" Count="12" />
+      <LineId Id="507" Count="0" />
+      <LineId Id="198" Count="145" />
+      <LineId Id="502" Count="0" />
+      <LineId Id="345" Count="56" />
       <LineId Id="454" Count="0" />
       <LineId Id="402" Count="2" />
       <LineId Id="455" Count="0" />

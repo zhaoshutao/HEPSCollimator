@@ -10,7 +10,49 @@ VAR
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[modbus();
+      <ST><![CDATA[IF simulation THEN
+	E_STOP:=TRUE;
+	foreward_limit_axis1:=TRUE;
+	backward_limit_axis1:=TRUE;
+	foreward_limit_axis2:=TRUE;
+	backward_limit_axis2:=TRUE;
+END_IF
+//
+IF Axis_All_Positionstart THEN
+	Axis1_Positionstart:=TRUE;
+	Axis2_Positionstart:=TRUE;
+	Axis_All_Positionstart:=FALSE;
+END_IF
+(*
+IF Axis_All_PositiveJog THEN
+	Axis1_PositiveJog:=TRUE;
+	Axis2_PositiveJog:=TRUE;
+	Axis_All_PositiveJog:=FALSE;
+END_IF
+IF Axis_All_NegativeJog THEN
+	Axis1_NegativeJog:=TRUE;
+	Axis1_NegativeJog:=TRUE;
+	Axis_All_NegativeJog:=FALSE;
+END_IF
+*)
+(*
+IF Axis_All_STOP THEN
+	Axis1_STOP:=TRUE;
+	Axis2_STOP:=TRUE;
+	Axis_All_STOP:=FALSE;
+END_IF
+*)
+ 
+IF E_STOP  AND NOT Axis1_error AND NOT Axis2_error AND touchLimitSwitch_axis1 AND touchLimitSwitch_axis2 THEN
+	Error:=FALSE;//无错误
+ELSE
+	Error:=TRUE;//无错误
+END_IF
+InputPositionProtection();
+LVDT();
+touchLimitSwitch_axis1:=foreward_limit_axis1 AND backward_limit_axis1;
+touchLimitSwitch_axis2:=foreward_limit_axis2 AND backward_limit_axis2;
+modbus();
 (*******控制模式选择及显示，在电机运行过程中禁止切换*********)   
  IF  Local_Remote   THEN
       Local_led                       := TRUE;
@@ -43,6 +85,32 @@ TempController1_PV  :=35.0*( (INT_TO_REAL(PT1_IN))*10.0/32767)-50.0;//接入EL32
 TempController2_PV  :=35.0*( (INT_TO_REAL(PT2_IN))*10.0/32767)-50.0;//接入EL3214，三线制pt100]]></ST>
     </Implementation>
     <LineIds Name="MAIN">
+      <LineId Id="84" Count="1" />
+      <LineId Id="90" Count="3" />
+      <LineId Id="86" Count="0" />
+      <LineId Id="97" Count="0" />
+      <LineId Id="101" Count="0" />
+      <LineId Id="106" Count="0" />
+      <LineId Id="113" Count="0" />
+      <LineId Id="108" Count="0" />
+      <LineId Id="107" Count="0" />
+      <LineId Id="131" Count="0" />
+      <LineId Id="116" Count="3" />
+      <LineId Id="115" Count="0" />
+      <LineId Id="121" Count="3" />
+      <LineId Id="120" Count="0" />
+      <LineId Id="132" Count="1" />
+      <LineId Id="110" Count="1" />
+      <LineId Id="114" Count="0" />
+      <LineId Id="112" Count="0" />
+      <LineId Id="109" Count="0" />
+      <LineId Id="134" Count="0" />
+      <LineId Id="104" Count="0" />
+      <LineId Id="94" Count="1" />
+      <LineId Id="98" Count="1" />
+      <LineId Id="96" Count="0" />
+      <LineId Id="83" Count="0" />
+      <LineId Id="87" Count="2" />
       <LineId Id="67" Count="0" />
       <LineId Id="18" Count="6" />
       <LineId Id="6" Count="1" />

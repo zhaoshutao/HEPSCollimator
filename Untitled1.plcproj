@@ -36,6 +36,12 @@
     <Compile Include="POUs\INIT.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="POUs\InputPositionProtection.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\LVDT.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="POUs\MAIN.TcPOU">
       <SubType>Code</SubType>
     </Compile>

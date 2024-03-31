@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.6">
   <POU Name="modbus" Id="{15ca4977-0e75-43df-9779-165aec8ec23c}" SpecialFunc="None">
     <Declaration><![CDATA[PROGRAM modbus
 VAR
@@ -15,10 +15,10 @@ MOD_B_Axis1_running          :=Axis1_running;
 MOD_B_Axis2_running          :=Axis2_running;
 MOD_B_Axis1_Position_done    :=Axis1_Position_done;
 MOD_B_Axis2_Position_done    :=Axis2_Position_done;
-MOD_B_foreward_limit_axis1_LED :=foreward_limit_axis1_LED;
-MOD_B_reverse_limit_axis1_LED  :=reverse_limit_axis1_LED;
-MOD_B_foreward_limit_axis2_LED :=foreward_limit_axis2_LED;
-MOD_B_reverse_limit_axis2_LED  :=reverse_limit_axis2_LED;
+MOD_B_foreward_limit_axis1 	 :=foreward_limit_axis1;
+MOD_B_backward_limit_axis1   :=backward_limit_axis1;
+MOD_B_foreward_limit_axis2   :=foreward_limit_axis2;
+MOD_B_backward_limit_axis2   :=backward_limit_axis2;
 MOB_R_Axis1_Currentvelocity  :=Axis1_Currentvelocity;
 MOB_R_Axis2_Currentvelocity  :=Axis2_Currentvelocity;
 MOB_R_Axis1_CurrentPosition  :=Axis1_CurrentPosition_retain;
@@ -31,36 +31,36 @@ MOB_R_LVDT2_PV               :=LVDT2_PV;
 
 IF  MOD_B_Remote_led  THEN    
 	
-Axis1_PositiveJog            :=MOD_B_Axis1_PositiveJog;
-Axis1_NegativeJog            :=MOD_B_Axis1_NegativeJog;    
-Axis1_Positionstart          :=MOD_B_Axis1_Positionstart; 
-Axis1_STOP                   :=MOD_B_Axis1_STOP;
-Axis2_PositiveJog            :=MOD_B_Axis2_PositiveJog;
-Axis2_NegativeJog            :=MOD_B_Axis2_NegativeJog;    
-Axis2_Positionstart          :=MOD_B_Axis2_Positionstart; 
-Axis2_STOP                   :=MOD_B_Axis2_STOP;
-MC_Reset1_Execute            :=MOD_B_MC_Reset1_Execute;
-MC_Reset2_Execute            :=MOD_B_MC_Reset2_Execute;
-Axis1_TargetPosition_retain  :=MOB_R_Axis1_SetPosition;
-Axis2_TargetPosition_retain  :=MOB_R_Axis2_SetPosition;
-Axis1_Setvelocity            :=MOB_R_Axis1_Setvelocity;
-Axis2_Setvelocity            :=MOB_R_Axis2_Setvelocity;
+	Axis1_PositiveJog            :=MOD_B_Axis1_PositiveJog;
+	Axis1_NegativeJog            :=MOD_B_Axis1_NegativeJog;    
+	Axis1_Positionstart          :=MOD_B_Axis1_Positionstart; 
+	Axis1_STOP                   :=MOD_B_Axis1_STOP;
+	Axis2_PositiveJog            :=MOD_B_Axis2_PositiveJog;
+	Axis2_NegativeJog            :=MOD_B_Axis2_NegativeJog;    
+	Axis2_Positionstart          :=MOD_B_Axis2_Positionstart; 
+	Axis2_STOP                   :=MOD_B_Axis2_STOP;
+	MC_Reset1_Execute            :=MOD_B_MC_Reset1_Execute;
+	MC_Reset2_Execute            :=MOD_B_MC_Reset2_Execute;
+	Axis1_TargetPosition_retain  :=MOB_R_Axis1_SetPosition;
+	Axis2_TargetPosition_retain  :=MOB_R_Axis2_SetPosition;
+	Axis1_Setvelocity            :=MOB_R_Axis1_Setvelocity;
+	Axis2_Setvelocity            :=MOB_R_Axis2_Setvelocity;
 
 ELSE
-MOD_B_Axis1_PositiveJog       := Axis1_PositiveJog;	
-MOD_B_Axis1_NegativeJog       := Axis1_NegativeJog;
-MOD_B_Axis1_Positionstart     := Axis1_Positionstart;
-MOD_B_Axis1_STOP              := Axis1_STOP;
-MOD_B_Axis2_PositiveJog       := Axis2_PositiveJog;	
-MOD_B_Axis2_NegativeJog       := Axis2_NegativeJog;
-MOD_B_Axis2_Positionstart     := Axis2_Positionstart;
-MOD_B_Axis2_STOP              := Axis2_STOP;
-MOD_B_MC_Reset1_Execute       :=MC_Reset1_Execute;
-MOD_B_MC_Reset2_Execute       :=MC_Reset2_Execute;
-MOB_R_Axis1_SetPosition       :=Axis1_TargetPosition_retain;
-MOB_R_Axis2_SetPosition       :=Axis2_TargetPosition_retain;
-MOB_R_Axis1_Setvelocity       :=Axis1_Setvelocity;
-MOB_R_Axis2_Setvelocity       :=Axis2_Setvelocity;
+	MOD_B_Axis1_PositiveJog       := Axis1_PositiveJog;	
+	MOD_B_Axis1_NegativeJog       := Axis1_NegativeJog;
+	MOD_B_Axis1_Positionstart     := Axis1_Positionstart;
+	MOD_B_Axis1_STOP              := Axis1_STOP;
+	MOD_B_Axis2_PositiveJog       := Axis2_PositiveJog;	
+	MOD_B_Axis2_NegativeJog       := Axis2_NegativeJog;
+	MOD_B_Axis2_Positionstart     := Axis2_Positionstart;
+	MOD_B_Axis2_STOP              := Axis2_STOP;
+	MOD_B_MC_Reset1_Execute       :=MC_Reset1_Execute;
+	MOD_B_MC_Reset2_Execute       :=MC_Reset2_Execute;
+	MOB_R_Axis1_SetPosition       :=Axis1_TargetPosition_retain;
+	MOB_R_Axis2_SetPosition       :=Axis2_TargetPosition_retain;
+	MOB_R_Axis1_Setvelocity       :=Axis1_Setvelocity;
+	MOB_R_Axis2_Setvelocity       :=Axis2_Setvelocity;
 
 
 END_IF
