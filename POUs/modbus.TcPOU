@@ -45,6 +45,12 @@ IF  MOD_B_Remote_led  THEN
 	Axis2_TargetPosition_retain  :=MOB_R_Axis2_SetPosition;
 	Axis1_Setvelocity            :=MOB_R_Axis1_Setvelocity;
 	Axis2_Setvelocity            :=MOB_R_Axis2_Setvelocity;
+	Axis_All_PositiveJog         :=MOD_B_Axis_All_PositiveJog;
+	Axis_All_NegativeJog         :=MOD_B_Axis_All_NegativeJog;    
+	Axis_All_Positionstart       :=MOD_B_Axis_All_Positionstart; 
+	Axis_All_STOP                :=MOD_B_Axis_All_STOP;
+	Axis1_JogPosition_retain	 :=MOB_R_Axis1_JogPosition;
+	Axis2_JogPosition_retain	 :=MOB_R_Axis2_JogPosition;
 
 ELSE
 	MOD_B_Axis1_PositiveJog       := Axis1_PositiveJog;	
@@ -61,8 +67,12 @@ ELSE
 	MOB_R_Axis2_SetPosition       :=Axis2_TargetPosition_retain;
 	MOB_R_Axis1_Setvelocity       :=Axis1_Setvelocity;
 	MOB_R_Axis2_Setvelocity       :=Axis2_Setvelocity;
-
-
+	MOD_B_Axis_All_PositiveJog    := Axis_All_PositiveJog;	
+	MOD_B_Axis_All_NegativeJog    := Axis_All_NegativeJog;
+	MOD_B_Axis_All_Positionstart  := Axis_All_Positionstart;
+	MOD_B_Axis_All_STOP           := Axis_All_STOP;
+	MOB_R_Axis1_JogPosition		:=Axis1_JogPosition_retain;
+	MOB_R_Axis2_JogPosition		:=Axis2_JogPosition_retain;
 END_IF
 
 ]]></ST>
@@ -92,6 +102,9 @@ END_IF
       <LineId Id="30" Count="2" />
       <LineId Id="51" Count="0" />
       <LineId Id="33" Count="0" />
+      <LineId Id="90" Count="2" />
+      <LineId Id="89" Count="0" />
+      <LineId Id="97" Count="1" />
       <LineId Id="53" Count="0" />
       <LineId Id="56" Count="3" />
       <LineId Id="65" Count="3" />
@@ -101,6 +114,8 @@ END_IF
       <LineId Id="73" Count="1" />
       <LineId Id="76" Count="0" />
       <LineId Id="75" Count="0" />
+      <LineId Id="94" Count="2" />
+      <LineId Id="93" Count="0" />
       <LineId Id="72" Count="0" />
       <LineId Id="28" Count="0" />
       <LineId Id="27" Count="0" />

@@ -33,6 +33,9 @@
     <Compile Include="POUs\Axis2_FC.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="POUs\FB_Dummy.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="POUs\INIT.TcPOU">
       <SubType>Code</SubType>
     </Compile>
@@ -49,6 +52,12 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\NOVRAM.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\SLOWTASK.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\UPSPersitent.TcPOU">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
@@ -70,6 +79,10 @@
     <PlaceholderReference Include="Tc2_Standard">
       <DefaultResolution>Tc2_Standard, * (Beckhoff Automation GmbH)</DefaultResolution>
       <Namespace>Tc2_Standard</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc2_SUPS">
+      <DefaultResolution>Tc2_SUPS, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc2_SUPS</Namespace>
     </PlaceholderReference>
     <PlaceholderReference Include="Tc2_System">
       <DefaultResolution>Tc2_System, * (Beckhoff Automation GmbH)</DefaultResolution>

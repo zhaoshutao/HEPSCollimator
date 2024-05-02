@@ -9,51 +9,56 @@ END_VAR
       <ST><![CDATA[LVDT1_PV:=INT_TO_REAL(LVDT1_IN);
 LVDT2_PV:=INT_TO_REAL(LVDT2_IN);
 //LVDT1
-IF LVDT1_PV<=LVDT1_Threshold THEN//进入传感器限位区，报错
-	LVDT1_OutOfThresholdRange:=FALSE;
-	Error:=TRUE;
-	ErrorDescription:='LVDT1 In Alarm Range';
-	LVDT1_OnceInRangeFlag:=1;//标志曾经进入过限位区
-END_IF
-//正常情况下，出限位区，恢复正常
-//如果曾经进入过限位区，需要手动解除后，报警才解除
-IF LVDT1_OnceInRangeFlag=1 THEN
-	LVDT1_OutOfThresholdRange:=FALSE;
-	Error:=TRUE;
-	ErrorDescription:='LVDT1 In Alarm Range';
-	IF LVDT1_ManualReleaseAlarm THEN
-		Error:=FALSE;
-		ErrorDescription:='';
-		LVDT1_OnceInRangeFlag:=0;
-		LVDT1_ManualReleaseAlarm:=FALSE;
-		LVDT1_OutOfThresholdRange:=TRUE;
+IF LVDT1_FunctionOn THEN
+	IF LVDT1_PV<=LVDT1_Threshold THEN//进入传感器限位区，报错
+		LVDT1_OutOfThresholdRange:=FALSE;
+		Error:=TRUE;
+		ErrorDescription:='LVDT1 In Alarm Range';
+		LVDT1_OnceInRangeFlag:=1;//标志曾经进入过限位区
+	END_IF
+	//正常情况下，出限位区，恢复正常
+	//如果曾经进入过限位区，需要手动解除后，报警才解除
+	IF LVDT1_OnceInRangeFlag=1 THEN
+		LVDT1_OutOfThresholdRange:=FALSE;
+		Error:=TRUE;
+		ErrorDescription:='LVDT1 In Alarm Range';
+		IF LVDT1_ManualReleaseAlarm THEN
+			Error:=FALSE;
+			ErrorDescription:='';
+			LVDT1_OnceInRangeFlag:=0;
+			LVDT1_ManualReleaseAlarm:=FALSE;
+			LVDT1_OutOfThresholdRange:=TRUE;
+		END_IF
 	END_IF
 END_IF
 //LVDT2
-IF LVDT2_PV<=LVDT2_Threshold THEN//进入传感器限位区，报错
-	LVDT2_OutOfThresholdRange:=FALSE;
-	Error:=TRUE;
-	ErrorDescription:='LVDT2 In Alarm Range';
-	LVDT2_OnceInRangeFlag:=1;//标志曾经进入过限位区
-END_IF
-//正常情况下，出限位区，恢复正常
-//如果曾经进入过限位区，需要手动解除后，报警才解除
-IF LVDT2_OnceInRangeFlag=1 THEN
-	LVDT2_OutOfThresholdRange:=FALSE;
-	Error:=TRUE;
-	ErrorDescription:='LVDT2 In Alarm Range';
-	IF LVDT2_ManualReleaseAlarm THEN
-		Error:=FALSE;
-		ErrorDescription:='';
-		LVDT2_OnceInRangeFlag:=0;
-		LVDT2_ManualReleaseAlarm:=FALSE;
-		LVDT2_OutOfThresholdRange:=TRUE;
+IF LVDT2_FunctionOn THEN
+	IF LVDT2_PV<=LVDT2_Threshold THEN//进入传感器限位区，报错
+		LVDT2_OutOfThresholdRange:=FALSE;
+		Error:=TRUE;
+		ErrorDescription:='LVDT2 In Alarm Range';
+		LVDT2_OnceInRangeFlag:=1;//标志曾经进入过限位区
+	END_IF
+	//正常情况下，出限位区，恢复正常
+	//如果曾经进入过限位区，需要手动解除后，报警才解除
+	IF LVDT2_OnceInRangeFlag=1 THEN
+		LVDT2_OutOfThresholdRange:=FALSE;
+		Error:=TRUE;
+		ErrorDescription:='LVDT2 In Alarm Range';
+		IF LVDT2_ManualReleaseAlarm THEN
+			Error:=FALSE;
+			ErrorDescription:='';
+			LVDT2_OnceInRangeFlag:=0;
+			LVDT2_ManualReleaseAlarm:=FALSE;
+			LVDT2_OutOfThresholdRange:=TRUE;
+		END_IF
 	END_IF
 END_IF]]></ST>
     </Implementation>
     <LineIds Name="LVDT">
       <LineId Id="5" Count="1" />
       <LineId Id="85" Count="0" />
+      <LineId Id="92" Count="0" />
       <LineId Id="8" Count="0" />
       <LineId Id="23" Count="0" />
       <LineId Id="16" Count="0" />
@@ -72,11 +77,14 @@ END_IF]]></ST>
       <LineId Id="87" Count="0" />
       <LineId Id="62" Count="0" />
       <LineId Id="52" Count="0" />
+      <LineId Id="93" Count="0" />
       <LineId Id="86" Count="0" />
+      <LineId Id="94" Count="0" />
       <LineId Id="67" Count="16" />
       <LineId Id="88" Count="0" />
       <LineId Id="84" Count="0" />
       <LineId Id="15" Count="0" />
+      <LineId Id="95" Count="0" />
     </LineIds>
   </POU>
 </TcPlcObject>

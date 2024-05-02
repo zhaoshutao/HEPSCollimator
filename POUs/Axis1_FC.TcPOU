@@ -357,10 +357,10 @@ IF  Axis1_Positionstart_STOP AND Axis1_STOP_done  THEN
 	Axis1_STOP_done                :=FALSE;
 END_IF;
 
-IF dd  THEN
-	Axis1_CurrentPosition_retain  :=LREAL_TO_REAL(axis1.NcToPlc.ActPos);
-	Axis1_Currentvelocity  :=LREAL_TO_REAL(axis1.NcToPlc.ActVelo);
-END_IF;
+//IF dd  THEN
+	//Axis1_CurrentPosition_retain  :=LREAL_TO_REAL(axis1.NcToPlc.ActPos);
+	//Axis1_Currentvelocity  :=LREAL_TO_REAL(axis1.NcToPlc.ActVelo);
+//END_IF;
 
 Axis1_disable_delay(in := (Power_axis1.Status  AND NOT  Axis1_running   ), pt := T#5S);
 IF  Power_axis1.Status  AND  NOT  Axis1_running    AND  Axis1_disable_delay.Q  THEN

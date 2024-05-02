@@ -7,21 +7,29 @@ VAR
      E_STOP_rtring                                   :R_TRIG;
 	 E_STOP_rem_rtring                         :R_TRIG;
      E_STOP_rem_ftring                         :F_TRIG;
+	 Axis_All_Positionstart_rtrig				:R_TRIG;
+
 END_VAR
+
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[IF simulation THEN
+      <ST><![CDATA[UPSPersitent();
+INIT();
+Axis1_FC();
+Axis2_FC();
+IF simulation THEN
 	E_STOP:=TRUE;
 	foreward_limit_axis1:=TRUE;
 	backward_limit_axis1:=TRUE;
 	foreward_limit_axis2:=TRUE;
 	backward_limit_axis2:=TRUE;
 END_IF
-//
-IF Axis_All_Positionstart THEN
+// E_STOP_ftring(CLK:=E_STOP , Q=> );
+Axis_All_Positionstart_rtrig(CLK:=Axis_All_Positionstart,Q=>);
+IF Axis_All_Positionstart_rtrig. Q THEN
 	Axis1_Positionstart:=TRUE;
 	Axis2_Positionstart:=TRUE;
-	Axis_All_Positionstart:=FALSE;
+	//Axis_All_Positionstart:=FALSE;
 END_IF
 (*
 IF Axis_All_PositiveJog THEN
@@ -85,10 +93,13 @@ TempController1_PV  :=35.0*( (INT_TO_REAL(PT1_IN))*10.0/32767)-50.0;//接入EL32
 TempController2_PV  :=35.0*( (INT_TO_REAL(PT2_IN))*10.0/32767)-50.0;//接入EL3214，三线制pt100]]></ST>
     </Implementation>
     <LineIds Name="MAIN">
+      <LineId Id="152" Count="0" />
+      <LineId Id="175" Count="2" />
       <LineId Id="84" Count="1" />
       <LineId Id="90" Count="3" />
       <LineId Id="86" Count="0" />
       <LineId Id="97" Count="0" />
+      <LineId Id="143" Count="0" />
       <LineId Id="101" Count="0" />
       <LineId Id="106" Count="0" />
       <LineId Id="113" Count="0" />
