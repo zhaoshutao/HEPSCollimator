@@ -24,46 +24,29 @@
     <Compile Include="PlcTask.TcTTO">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="PlcTaskNOV.TcTTO">
+    <Compile Include="POUs\Axis1_Motion.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\Axis1_FC.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="POUs\Axis2_FC.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="POUs\FB_Dummy.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="POUs\INIT.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="POUs\InputPositionProtection.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="POUs\LVDT.TcPOU">
+    <Compile Include="POUs\Axis2_Motion.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\MAIN.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\modbus.TcPOU">
+    <Compile Include="POUs\PersistentFunction\FB_Dummy.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\NOVRAM.TcPOU">
+    <Compile Include="POUs\PersistentFunction\SLOWTASK.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\SLOWTASK.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="POUs\UPSPersitent.TcPOU">
+    <Compile Include="POUs\PersistentFunction\UPSPersitent.TcPOU">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="DUTs" />
     <Folder Include="GVLs" />
+    <Folder Include="POUs\PersistentFunction" />
     <Folder Include="VISUs" />
     <Folder Include="POUs" />
   </ItemGroup>
