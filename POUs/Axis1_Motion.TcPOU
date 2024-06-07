@@ -38,20 +38,51 @@ VAR
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[//
+      <ST><![CDATA[///
 //输入保护
 //
-IF targetPositionAxis1>=Axis1_minPosition AND targetPositionAxis1<=Axis1_maxPosition THEN
-	Axis1_InputPositionOutOfRange:=FALSE;
-	Error:=FALSE;
-	ErrorId:=0;
-	ErrorDescription:='';
-ELSE
-	Axis1_InputPositionOutOfRange:=TRUE;
-	Error:=TRUE;
-	ErrorId:=1001;
-	ErrorDescription:='Axis1_InputPositionOutOfRange';
-	RETURN;
+IF btn_Move_Axis1 THEN
+	IF targetPositionAxis1>=Axis1_minPosition AND targetPositionAxis1<=Axis1_maxPosition THEN
+		Axis1_InputPositionOutOfRange:=FALSE;
+		Error:=FALSE;
+		ErrorId:=0;
+		ErrorDescription:='';
+	ELSE
+		Axis1_InputPositionOutOfRange:=TRUE;
+		Error:=TRUE;
+		ErrorId:=1001;
+		ErrorDescription:='Axis1_InputPositionOutOfRange';
+		RETURN;
+	END_IF
+END_IF
+IF btn_JogForward_Axis1 THEN
+	IF Axis1_CurrentPosition_retain+increaseJogPositionAxis1<Axis1_maxPosition  THEN
+		Axis1_InputPositionOutOfRange:=FALSE;
+		Error:=FALSE;
+		ErrorId:=0;
+		ErrorDescription:='';
+	ELSE
+		Axis1_InputPositionOutOfRange:=TRUE;
+		Error:=TRUE;
+		ErrorId:=1002;
+		ErrorDescription:='exceed Axis1_maxPosition';
+		RETURN;
+	END_IF
+END_IF 
+
+IF  btn_JogBackward_Axis1 THEN
+	IF Axis1_CurrentPosition_retain-increaseJogPositionAxis1>Axis1_minPosition  THEN
+		Axis1_InputPositionOutOfRange:=FALSE;
+		Error:=FALSE;
+		ErrorId:=0;
+		ErrorDescription:='';
+	ELSE
+		Axis1_InputPositionOutOfRange:=TRUE;
+		Error:=TRUE;
+		ErrorId:=1003;
+		ErrorDescription:='less than Axis1_minPosition';
+		RETURN;
+	END_IF
 END_IF
 //
 //运行状态指示
@@ -2017,13 +2048,7 @@ END_IF;]]></ST>
       </Implementation>
     </Action>
     <LineIds Name="Axis1_Motion">
-      <LineId Id="41" Count="2" />
-      <LineId Id="333" Count="1" />
-      <LineId Id="406" Count="1" />
-      <LineId Id="405" Count="0" />
-      <LineId Id="335" Count="1" />
-      <LineId Id="338" Count="2" />
-      <LineId Id="337" Count="0" />
+      <LineId Id="443" Count="44" />
       <LineId Id="332" Count="0" />
       <LineId Id="50" Count="2" />
       <LineId Id="398" Count="0" />

@@ -41,17 +41,48 @@ END_VAR
       <ST><![CDATA[//
 //输入保护
 //
-IF targetPositionAxis2>=Axis2_minPosition AND targetPositionAxis2<=Axis2_maxPosition THEN
-	Axis2_InputPositionOutOfRange:=FALSE;
-	Error:=FALSE;
-	ErrorId:=0;
-	ErrorDescription:='';
-ELSE
-	Axis2_InputPositionOutOfRange:=TRUE;
-	Error:=TRUE;
-	ErrorId:=1001;
-	ErrorDescription:='Axis2_InputPositionOutOfRange';
-	RETURN;
+IF btn_Move_Axis2 THEN
+	IF targetPositionAxis2>=Axis2_minPosition AND targetPositionAxis2<=Axis2_maxPosition THEN
+		Axis2_InputPositionOutOfRange:=FALSE;
+		Error:=FALSE;
+		ErrorId:=0;
+		ErrorDescription:='';
+	ELSE
+		Axis2_InputPositionOutOfRange:=TRUE;
+		Error:=TRUE;
+		ErrorId:=1001;
+		ErrorDescription:='Axis2_InputPositionOutOfRange';
+		RETURN;
+	END_IF
+END_IF
+IF btn_JogForward_Axis2 THEN
+	IF Axis2_CurrentPosition_retain+increaseJogPositionAxis2<Axis2_maxPosition  THEN
+		Axis2_InputPositionOutOfRange:=FALSE;
+		Error:=FALSE;
+		ErrorId:=0;
+		ErrorDescription:='';
+	ELSE
+		Axis2_InputPositionOutOfRange:=TRUE;
+		Error:=TRUE;
+		ErrorId:=1002;
+		ErrorDescription:='exceed Axis2_maxPosition';
+		RETURN;
+	END_IF
+END_IF 
+
+IF  btn_JogBackward_Axis2 THEN
+	IF Axis2_CurrentPosition_retain-increaseJogPositionAxis2>Axis2_minPosition  THEN
+		Axis2_InputPositionOutOfRange:=FALSE;
+		Error:=FALSE;
+		ErrorId:=0;
+		ErrorDescription:='';
+	ELSE
+		Axis2_InputPositionOutOfRange:=TRUE;
+		Error:=TRUE;
+		ErrorId:=1003;
+		ErrorDescription:='less than Axis2_minPosition';
+		RETURN;
+	END_IF
 END_IF
 //
 //运行状态指示
@@ -2017,10 +2048,19 @@ END_IF;]]></ST>
       </Implementation>
     </Action>
     <LineIds Name="Axis2_Motion">
-      <LineId Id="783" Count="4" />
-      <LineId Id="1095" Count="1" />
-      <LineId Id="1094" Count="0" />
-      <LineId Id="788" Count="9" />
+      <LineId Id="783" Count="2" />
+      <LineId Id="1132" Count="0" />
+      <LineId Id="1135" Count="10" />
+      <LineId Id="1133" Count="1" />
+      <LineId Id="1146" Count="0" />
+      <LineId Id="1152" Count="10" />
+      <LineId Id="1147" Count="0" />
+      <LineId Id="794" Count="0" />
+      <LineId Id="1149" Count="0" />
+      <LineId Id="1148" Count="0" />
+      <LineId Id="1169" Count="10" />
+      <LineId Id="1150" Count="1" />
+      <LineId Id="795" Count="2" />
       <LineId Id="1089" Count="0" />
       <LineId Id="798" Count="15" />
       <LineId Id="1090" Count="3" />
