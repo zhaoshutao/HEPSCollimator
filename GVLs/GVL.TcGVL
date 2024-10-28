@@ -4,7 +4,7 @@
     <Declaration><![CDATA[
 VAR_GLOBAL
 	//global   
-	simulation:BOOL:=TRUE;
+	simulation:BOOL;
 	btn_LocalOrRemote:BOOL:=FALSE;
 	E_STOP  :BOOL;(*急停NC*) 
 	E_STOP_In  AT%I*:BOOL;(*急停NC*) 
@@ -25,10 +25,13 @@ VAR_GLOBAL
 	//axis1
 	axis1:AXIS_REF;
 	LVDT1_IN AT%I*:INT;(*1#LVDT*)
-	foreward_limit_axis1:BOOL;
-	foreward_limit_axis1_In AT%I*:BOOL;//1#电机正向限位
-	foreward_limit_axis1_simu:BOOL;//1#电机正向限位
-	backward_limit_axis1 AT%I*:BOOL:=TRUE;//1#电机负向限位（准直器未加，默认为TRUE）
+	//LS
+	foreward_limit_axis1_simu:BOOL;
+	foreward_limit_axis1:BOOL:=TRUE;
+	foreward_limit_axis1_In AT%I*:BOOL;//heps collimator not installed ,value are set to TRUE
+	backward_limit_axis1_simu:BOOL;
+	backward_limit_axis1:BOOL;
+	backward_limit_axis1_In AT%I*:BOOL;//1#电机负向限位.靠近束流
 	touchLimitSwitch_axis1:BOOL;
 	Axis1_error :BOOL;(*电机1故障指示*)
 	Axis1_moving:BOOL;(*1#电机运行指示*)
@@ -52,11 +55,15 @@ VAR_GLOBAL
 	//axis2
 	axis2:AXIS_REF;
 	LVDT2_IN AT%I*:INT;(*2#LVDT*)
-	foreward_limit_axis2:BOOL;
-	foreward_limit_axis2_In AT%I*:BOOL;//2#电机正向限位
+	//LS
 	foreward_limit_axis2_simu:BOOL;//1#电机正向限位
-	backward_limit_axis2 AT%I*:BOOL:=TRUE;//2#电机负向限位（准直器未加，默认为TRUE）
+	foreward_limit_axis2:BOOL:=TRUE;
+	foreward_limit_axis2_In AT%I*:BOOL;//heps collimator not installed ,value are set to TRUE
+	backward_limit_axis2_simu:BOOL;
+	backward_limit_axis2:BOOL;
+	backward_limit_axis2_In AT%I*:BOOL;
 	touchLimitSwitch_axis2:BOOL;
+	//
 	Axis2_error :BOOL;(*电机2故障指示*)	 
 	Axis2_moving	:BOOL;(*2#电机运行指示*)
 	LVDT2_FunctionOn:	BOOL;	
@@ -204,8 +211,10 @@ VAR_GLOBAL
 	MOD_Axis2_Currentvelocity                	AT%MB800:REAL;//12688
 	MOD_Axis2_CurrentPosition                   AT%MB804:REAL;//12690
  	MOD_LVDT2_PV                                AT%MB808:REAL;//12692
-	// REAL类型，每个值占两个寄存器  
-	MOD_ErrorId				                	AT%MB812:REAL;//12694
+	// INT类型
+	MOD_ErrorId				                	AT%MB812:INT;//12694
+	//STRING类型
+	MOD_ErrorDescription	                	AT%MB816:STRING;//12696
 END_VAR
 
 VAR_GLOBAL PERSISTENT

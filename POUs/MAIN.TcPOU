@@ -19,6 +19,9 @@ VAR
 	m_State_AxisAll: INT;
 	m_delay:TON;
 	init_dalay:TON;
+	simulation_EStop: BOOL;
+	simulation_ls1: BOOL;
+	simulation_ls2: BOOL;
 END_VAR
 
 ]]></Declaration>
@@ -836,8 +839,8 @@ touchLimitSwitch_axis2:=foreward_limit_axis2 AND backward_limit_axis2;]]></ST>
     </Action>
     <Action Name="LVDT" Id="{ee1384e8-93ec-4bc8-8c03-ea3ad4695dbc}">
       <Implementation>
-        <ST><![CDATA[LVDT1_PV:=INT_TO_REAL(LVDT1_IN);
-LVDT2_PV:=INT_TO_REAL(LVDT2_IN);
+        <ST><![CDATA[LVDT1_PV:=INT_TO_REAL(LVDT1_IN)/32767*10;
+LVDT2_PV:=INT_TO_REAL(LVDT2_IN)/32767*10;
 //LVDT1
 IF LVDT1_FunctionOn THEN
 	IF LVDT1_PV<=LVDT1_Threshold THEN//进入传感器限位区，报错
@@ -910,6 +913,7 @@ MOD_PositionSetDone_Axis1			:=PositionSetDone_Axis1;
 MOD_PositionSetDone_Axis2			:=PositionSetDone_Axis2;
 MOD_Error_led						:=Error;
 MOD_ErrorId							:=ErrorId;
+MOD_ErrorDescription				:=ErrorDescription;
 //EPICS->PLC，持续通讯
 //btn_LocalOrRemote					:=MOD_btn_LocalOrRemote;
 
@@ -1003,14 +1007,35 @@ END_IF]]></ST>
     <Action Name="simu" Id="{6b50ea10-48e2-419d-a016-511e1de3ae0b}">
       <Implementation>
         <ST><![CDATA[IF simulation THEN
+	backward_limit_axis1:=TRUE;
+	backward_limit_axis2:=TRUE;
 	E_STOP:=TRUE;
-	foreward_limit_axis1:=TRUE;
-	foreward_limit_axis2:=TRUE;
+	E_STOP_led:= TRUE;//green
 ELSE
 	E_STOP:=E_STOP_In;
-	foreward_limit_axis1:=foreward_limit_axis1_In;
-	foreward_limit_axis2:=foreward_limit_axis2_In;
-END_IF]]></ST>
+	backward_limit_axis1:=backward_limit_axis1_In;
+	backward_limit_axis2:=backward_limit_axis2_In;
+	E_STOP_led:= E_STOP_In;//red
+END_IF
+(*
+IF simulation_ls1 THEN
+	backward_limit_axis1:=TRUE;
+ELSE
+	backward_limit_axis1:=FALSE;
+END_IF
+IF simulation_ls2 THEN
+	backward_limit_axis2:=TRUE;
+ELSE
+	backward_limit_axis2:=FALSE;
+END_IF
+IF simulation_EStop THEN
+	E_STOP:=TRUE;
+	E_STOP_led:= TRUE;//green
+ELSE
+	E_STOP:=E_STOP_In;
+	E_STOP_led:= FALSE;//red
+END_IF
+*)]]></ST>
       </Implementation>
     </Action>
     <LineIds Name="MAIN">
@@ -1076,6 +1101,7 @@ END_IF]]></ST>
       <LineId Id="191" Count="0" />
       <LineId Id="195" Count="0" />
       <LineId Id="138" Count="0" />
+      <LineId Id="197" Count="0" />
       <LineId Id="23" Count="1" />
       <LineId Id="123" Count="0" />
       <LineId Id="116" Count="2" />
@@ -1123,11 +1149,26 @@ END_IF]]></ST>
       <LineId Id="69" Count="0" />
     </LineIds>
     <LineIds Name="MAIN.simu">
-      <LineId Id="2" Count="1" />
-      <LineId Id="7" Count="2" />
-      <LineId Id="12" Count="0" />
+      <LineId Id="2" Count="0" />
+      <LineId Id="7" Count="1" />
+      <LineId Id="18" Count="0" />
+      <LineId Id="22" Count="0" />
+      <LineId Id="9" Count="0" />
+      <LineId Id="19" Count="0" />
       <LineId Id="10" Count="1" />
+      <LineId Id="23" Count="0" />
       <LineId Id="1" Count="0" />
+      <LineId Id="36" Count="0" />
+      <LineId Id="25" Count="3" />
+      <LineId Id="24" Count="0" />
+      <LineId Id="30" Count="3" />
+      <LineId Id="29" Count="0" />
+      <LineId Id="13" Count="1" />
+      <LineId Id="34" Count="0" />
+      <LineId Id="16" Count="1" />
+      <LineId Id="35" Count="0" />
+      <LineId Id="15" Count="0" />
+      <LineId Id="37" Count="0" />
     </LineIds>
   </POU>
 </TcPlcObject>

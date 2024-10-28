@@ -35,6 +35,9 @@ VAR
 	Axis2_PositionProtectionSet:BOOL;
 	Axis2_InputPositionOutOfRange:BOOL;	
 	//
+	es_State_Axis2: INT;
+	FTrig_ReachLS2: F_TRIG;
+	RTrig_EStop2:R_TRIG;
 END_VAR
 ]]></Declaration>
     <Implementation>
@@ -102,7 +105,7 @@ ELSE
 	Axis2_error     := TRUE;
 	Error:=TRUE;
 	ErrorId:=1002;
-	ErrorDescription:='axis1.NcToPlc.ErrorCode=0';
+	ErrorDescription:='axis2.NcToPlc.ErrorCode=0';
 END_IF;
 //
 //Moving_done_Axis2
@@ -116,7 +119,7 @@ A_MCAxis2();
 CASE m_State_Axis2 OF 
 	0:
 		//检查是否有错误等
-		IF  E_STOP  AND NOT Axis2_error THEN
+		IF  NOT Axis2_error THEN
 			m_State_Axis2:=1;
 		ELSE
 			m_State_Axis2:=-100;
@@ -149,8 +152,9 @@ CASE m_State_Axis2 OF
 		btn_Move_Axis2:=FALSE;
 		MC_MoveAbsolute_Axis2.Execute:=FALSE;
 		Error:=TRUE;
+		Axis2_error:=TRUE;
 		ErrorId:=1002;
-		ErrorDescription:='E_STOP AND NOT Axis2_error';
+		ErrorDescription:='Axis2 move error';
 		
 END_CASE
 //
@@ -159,7 +163,7 @@ END_CASE
 CASE j_State_Axis2 OF 
 	0:
 		//检查是否有错误等
-		IF  E_STOP  AND NOT Axis2_error THEN
+		IF  NOT Axis2_error THEN
 			j_State_Axis2:=1;
 		ELSE
 			j_State_Axis2:=-100;
@@ -207,20 +211,16 @@ CASE j_State_Axis2 OF
 		btn_JogForward_Axis2:=FALSE;
 		btn_JogBackward_Axis2:=FALSE;
 		Error:=TRUE;
+		Axis2_error:=TRUE;
 		ErrorId:=1002;
-		ErrorDescription:='E_STOP AND NOT Axis2_error';	
+		ErrorDescription:='Axis2 jog error';	
 END_CASE
 //
 //STOP
 //
 CASE s_State_Axis2 OF 
 	0:
-		//检查是否有错误等
-		IF  E_STOP  AND NOT Axis2_error THEN
-			s_State_Axis2:=1;
-		ELSE
-			s_State_Axis2:=-100;
-		END_IF
+		s_State_Axis2:=1;
 	1:
 		//检查电机是否已经上电，如无，则上电
 		IF 	NOT MC_Power_Axis2.Status THEN
@@ -256,8 +256,9 @@ CASE s_State_Axis2 OF
 		btn_Stop_Axis2:=FALSE;
 		MC_Stop_Axis2.Execute:=FALSE;
 		Error:=TRUE;
+		Axis2_error:=TRUE;
 		ErrorId:=1002;
-		ErrorDescription:='E_STOP AND NOT Axis2_error';
+		ErrorDescription:='Axis2 stop error';
 		//reset status
 		btn_Move_Axis2:=FALSE;
 		MC_MoveAbsolute_Axis2.Execute:=FALSE;
@@ -334,17 +335,56 @@ IF btn_SetPosition_Axis2 THEN
 	END_CASE
 END_IF
 //
+//
+//
+//急停
+IF NOT(E_STOP AND E_STOP_rem) THEN
+	CASE es_State_Axis2 OF
+		0:
+			es_State_Axis2:=1;
+		1:
+			E_STOP_led:= FALSE;	//red
+			MC_Power_Axis2.Enable:=FALSE;//电机2断电
+			btn_Stop_Axis2:=TRUE;//STOP axis1
+			A_MCAxis2();
+			Error:=TRUE;
+			ErrorId:=101;
+			ErrorDescription:='E_STOP';
+	END_CASE
+ELSE
+		E_STOP_led:= TRUE;	//green
+		//Error:=FALSE;
+		//ErrorId:=0;
+		//ErrorDescription:='';
+END_IF
+RTrig_EStop2(CLK:=E_STOP AND E_STOP_rem);
+IF RTrig_EStop2.Q THEN
+	E_STOP_led:= TRUE;	//green
+	Error:=FALSE;
+	ErrorId:=0;
+	ErrorDescription:='';
+END_IF
+
+
+(*触发限位开关后，相当于点击了Stop按钮*)
+FTrig_ReachLS2(CLK:=foreward_limit_axis2 AND backward_limit_axis2);
+IF FTrig_ReachLS2.Q THEN
+	btn_Reset_Axis2:=TRUE;
+END_IF
+
+
+//
 //屏幕按钮**互锁变量,FALSE时，该按钮灰色不能触发
 //
 //J1->JOG+
-IF  foreward_limit_axis1 AND E_STOP  AND Local_led AND NOT  Axis2_error  AND NOT  Axis2_moving AND
+IF  foreward_limit_axis2 AND E_STOP  AND Local_led AND NOT  Axis2_error  AND NOT  Axis2_moving AND
 	NOT btn_Move_Axis2 AND NOT  btn_JogBackward_Axis2  THEN
 	Axis2_J1     := TRUE;
 ELSE
 	Axis2_J1     := FALSE;
 END_IF;
 //J2>JOG-
-IF  backward_limit_axis1  AND E_STOP   AND Local_led AND NOT  Axis2_error  AND NOT  Axis2_moving AND 
+IF  backward_limit_axis2  AND E_STOP   AND Local_led AND NOT  Axis2_error  AND NOT  Axis2_moving AND 
 	 NOT  btn_Move_Axis2 AND NOT btn_JogForward_Axis2 THEN
 	Axis2_J2     := TRUE;
 ELSE
@@ -368,21 +408,6 @@ IF E_STOP  AND Local_led AND NOT  Axis2_error THEN
 	Axis2_S     := TRUE;
 ELSE
 	Axis2_S     := FALSE;
-END_IF;
-//
-//
-//
-//急停
-E_STOP_ftring(CLK:=E_STOP , Q=> );
-E_STOP_rem_ftring(CLK:=E_STOP_rem , Q=> );
-IF E_STOP_ftring.Q OR E_STOP_rem_ftring.Q THEN     
-	E_STOP_led:= TRUE;	
-	MC_Power_Axis2.Enable:=FALSE;//电机2断电
-	btn_Stop_Axis2:=TRUE;//STOP axis1
-	A_MCAxis2();
-	Error:=TRUE;
-	ErrorId:=101;
-	ErrorDescription:='E_STOP';
 END_IF;]]></ST>
     </Implementation>
     <Action Name="A_MCAxis2" Id="{b024b50a-846f-42b5-9fd1-a325677feb88}">
@@ -2064,8 +2089,32 @@ END_IF;]]></ST>
       <LineId Id="1089" Count="0" />
       <LineId Id="798" Count="15" />
       <LineId Id="1090" Count="3" />
-      <LineId Id="814" Count="274" />
-      <LineId Id="344" Count="0" />
+      <LineId Id="814" Count="40" />
+      <LineId Id="1222" Count="0" />
+      <LineId Id="855" Count="57" />
+      <LineId Id="1223" Count="0" />
+      <LineId Id="913" Count="7" />
+      <LineId Id="923" Count="0" />
+      <LineId Id="927" Count="34" />
+      <LineId Id="1224" Count="0" />
+      <LineId Id="962" Count="75" />
+      <LineId Id="1074" Count="0" />
+      <LineId Id="1261" Count="3" />
+      <LineId Id="1276" Count="1" />
+      <LineId Id="1289" Count="2" />
+      <LineId Id="1282" Count="4" />
+      <LineId Id="1288" Count="0" />
+      <LineId Id="1279" Count="1" />
+      <LineId Id="1333" Count="3" />
+      <LineId Id="1332" Count="0" />
+      <LineId Id="1402" Count="0" />
+      <LineId Id="1451" Count="5" />
+      <LineId Id="1410" Count="0" />
+      <LineId Id="1412" Count="0" />
+      <LineId Id="1404" Count="4" />
+      <LineId Id="1403" Count="0" />
+      <LineId Id="1414" Count="36" />
+      <LineId Id="1413" Count="0" />
     </LineIds>
   </POU>
 </TcPlcObject>

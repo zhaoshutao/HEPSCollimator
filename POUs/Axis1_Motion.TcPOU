@@ -35,10 +35,13 @@ VAR
 	//input protect
 	Axis1_PositionProtectionSet:BOOL;
 	Axis1_InputPositionOutOfRange:BOOL;
+	es_State_Axis1: INT;
+	FTrig_ReachLS1: F_TRIG;
+	RTrig_EStop1:R_TRIG;
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[///
+      <ST><![CDATA[//
 //输入保护
 //
 IF btn_Move_Axis1 THEN
@@ -109,14 +112,14 @@ END_IF;
 //
 //
 Moving_done_Axis1:=MC_MoveAbsolute_Axis1.Done OR MC_JOG_Axis1.Done;
-
+//
 //Positioning move
 //
 A_MCAxis1();
 CASE m_State_Axis1 OF 
 	0:
 		//检查是否有错误等
-		IF  E_STOP  AND NOT Axis1_error THEN
+		IF  NOT Axis1_error THEN
 			m_State_Axis1:=1;
 		ELSE
 			m_State_Axis1:=-100;
@@ -149,6 +152,7 @@ CASE m_State_Axis1 OF
 		btn_Move_Axis1:=FALSE;
 		MC_MoveAbsolute_Axis1.Execute:=FALSE;
 		Error:=TRUE;
+		Axis1_error:=TRUE;
 		ErrorId:=1002;
 		ErrorDescription:='E_STOP AND NOT Axis1_error';
 		
@@ -159,7 +163,7 @@ END_CASE
 CASE j_State_Axis1 OF 
 	0:
 		//检查是否有错误等
-		IF  E_STOP  AND NOT Axis1_error THEN
+		IF  NOT Axis1_error THEN
 			j_State_Axis1:=1;
 		ELSE
 			j_State_Axis1:=-100;
@@ -207,6 +211,7 @@ CASE j_State_Axis1 OF
 		btn_JogForward_Axis1:=FALSE;
 		btn_JogBackward_Axis1:=FALSE;
 		Error:=TRUE;
+		Axis1_error:=TRUE;
 		ErrorId:=1002;
 		ErrorDescription:='E_STOP AND NOT Axis1_error';	
 END_CASE
@@ -215,12 +220,7 @@ END_CASE
 //
 CASE s_State_Axis1 OF 
 	0:
-		//检查是否有错误等
-		IF  E_STOP  AND NOT Axis1_error THEN
-			s_State_Axis1:=1;
-		ELSE
-			s_State_Axis1:=-100;
-		END_IF
+		s_State_Axis1:=1;
 	1:
 		//检查电机是否已经上电，如无，则上电
 		IF 	NOT MC_Power_Axis1.Status THEN
@@ -256,6 +256,7 @@ CASE s_State_Axis1 OF
 		btn_Stop_Axis1:=FALSE;
 		MC_Stop_Axis1.Execute:=FALSE;
 		Error:=TRUE;
+		Axis1_error:=TRUE;
 		ErrorId:=1002;
 		ErrorDescription:='E_STOP AND NOT Axis1_error';
 		//reset status
@@ -334,6 +335,40 @@ IF btn_SetPosition_Axis1 THEN
 	END_CASE
 END_IF
 //
+//
+//
+//急停
+IF NOT(E_STOP AND E_STOP_rem) THEN
+	CASE es_State_Axis1 OF
+		0:
+			es_State_Axis1:=1;
+		1:
+			E_STOP_led:= FALSE;	//red
+			MC_Power_Axis1.Enable:=FALSE;//电机2断电
+			btn_Stop_Axis1:=TRUE;//STOP axis1
+			A_MCAxis1();
+			Error:=TRUE;
+			ErrorId:=101;
+			ErrorDescription:='E_STOP';
+	END_CASE
+END_IF
+
+RTrig_EStop1(CLK:=E_STOP AND E_STOP_rem);
+IF RTrig_EStop1.Q THEN
+	E_STOP_led:= TRUE;	//green
+	Error:=FALSE;
+	ErrorId:=0;
+	ErrorDescription:='';
+END_IF
+
+(*触发限位开关后，相当于点击了Stop按钮*)
+FTrig_ReachLS1(CLK:=foreward_limit_axis1 AND backward_limit_axis1);
+IF FTrig_ReachLS1.Q THEN
+	btn_Reset_Axis1:=TRUE;
+END_IF
+
+
+//
 //屏幕按钮**互锁变量,FALSE时，该按钮灰色不能触发
 //
 //J1->JOG+
@@ -368,21 +403,6 @@ IF E_STOP  AND Local_led AND NOT  Axis1_error THEN
 	Axis1_S     := TRUE;
 ELSE
 	Axis1_S     := FALSE;
-END_IF;
-//
-//
-//
-//急停
-E_STOP_ftring(CLK:=E_STOP , Q=> );
-E_STOP_rem_ftring(CLK:=E_STOP_rem , Q=> );
-IF E_STOP_ftring.Q OR E_STOP_rem_ftring.Q THEN     
-	E_STOP_led:= TRUE;	
-	MC_Power_Axis1.Enable:=FALSE;//电机1断电
-	btn_Stop_Axis1:=TRUE;//STOP axis1
-	A_MCAxis1();
-	Error:=TRUE;
-	ErrorId:=101;
-	ErrorDescription:='E_STOP';
 END_IF;]]></ST>
     </Implementation>
     <Action Name="A_MCAxis1" Id="{10c0b877-c729-48f5-a9bd-16c8e6afc448}">
@@ -2048,19 +2068,26 @@ END_IF;]]></ST>
       </Implementation>
     </Action>
     <LineIds Name="Axis1_Motion">
-      <LineId Id="443" Count="44" />
-      <LineId Id="332" Count="0" />
-      <LineId Id="50" Count="2" />
-      <LineId Id="398" Count="0" />
-      <LineId Id="53" Count="16" />
-      <LineId Id="400" Count="1" />
-      <LineId Id="70" Count="0" />
-      <LineId Id="402" Count="1" />
-      <LineId Id="71" Count="257" />
-      <LineId Id="5" Count="0" />
-      <LineId Id="341" Count="2" />
-      <LineId Id="345" Count="10" />
-      <LineId Id="344" Count="0" />
+      <LineId Id="706" Count="6" />
+      <LineId Id="714" Count="4" />
+      <LineId Id="720" Count="8" />
+      <LineId Id="730" Count="4" />
+      <LineId Id="736" Count="9" />
+      <LineId Id="747" Count="4" />
+      <LineId Id="753" Count="137" />
+      <LineId Id="893" Count="0" />
+      <LineId Id="897" Count="111" />
+      <LineId Id="1045" Count="17" />
+      <LineId Id="1068" Count="0" />
+      <LineId Id="1113" Count="0" />
+      <LineId Id="1112" Count="0" />
+      <LineId Id="1115" Count="0" />
+      <LineId Id="1118" Count="2" />
+      <LineId Id="1116" Count="1" />
+      <LineId Id="1069" Count="4" />
+      <LineId Id="699" Count="0" />
+      <LineId Id="1075" Count="36" />
+      <LineId Id="1074" Count="0" />
     </LineIds>
   </POU>
 </TcPlcObject>
