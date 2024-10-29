@@ -35,7 +35,7 @@ VAR_GLOBAL
 	touchLimitSwitch_axis1:BOOL;
 	Axis1_error :BOOL;(*电机1故障指示*)
 	Axis1_moving:BOOL;(*1#电机运行指示*)
-	LVDT1_FunctionOn:BOOL;
+	LVDT1_FunctionOn:BOOL:=TRUE;
 	LVDT1_PV  :REAL;(*1#LVDT*)
 	LVDT1_Threshold :REAL;
 	LVDT1_OutOfThresholdRange :BOOL:=TRUE;
@@ -66,7 +66,7 @@ VAR_GLOBAL
 	//
 	Axis2_error :BOOL;(*电机2故障指示*)	 
 	Axis2_moving	:BOOL;(*2#电机运行指示*)
-	LVDT2_FunctionOn:	BOOL;	
+	LVDT2_FunctionOn:	BOOL:=TRUE;	
 	LVDT2_PV	:REAL;(*2#LVDT*)	
 	LVDT2_Threshold	:REAL;	
 	LVDT2_OutOfThresholdRange	:BOOL:=TRUE;	

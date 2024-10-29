@@ -59,7 +59,7 @@ IF btn_Move_Axis2 THEN
 	END_IF
 END_IF
 IF btn_JogForward_Axis2 THEN
-	IF Axis2_CurrentPosition_retain+increaseJogPositionAxis2<Axis2_maxPosition  THEN
+	IF Axis2_CurrentPosition_retain+increaseJogPositionAxis2<=Axis2_maxPosition  THEN
 		Axis2_InputPositionOutOfRange:=FALSE;
 		Error:=FALSE;
 		ErrorId:=0;
@@ -74,7 +74,7 @@ IF btn_JogForward_Axis2 THEN
 END_IF 
 
 IF  btn_JogBackward_Axis2 THEN
-	IF Axis2_CurrentPosition_retain-increaseJogPositionAxis2>Axis2_minPosition  THEN
+	IF Axis2_CurrentPosition_retain-increaseJogPositionAxis2>=Axis2_minPosition  THEN
 		Axis2_InputPositionOutOfRange:=FALSE;
 		Error:=FALSE;
 		ErrorId:=0;
